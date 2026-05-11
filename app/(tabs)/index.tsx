@@ -1,98 +1,182 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
 
-export default function HomeScreen() {
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
+import PostCard from '@/components/PostCard';
+
+import {
+  colors,
+  spacing,
+} from '@/constants/theme';
+
+const mockPosts = [
+  {
+    id: '1',
+    username: 'Ana Silva',
+    avatar:
+      'https://i.pravatar.cc/100?img=1',
+    time: '2h atrás',
+    content:
+      'Mais um treino concluído! 🏃‍♀️',
+    image:
+      'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800',
+    hypes: 234,
+    comments: 18,
+    userType: 'atleta' as const,
+  },
+
+  {
+    id: '2',
+    username: 'Carlos Mendes',
+    avatar:
+      'https://i.pravatar.cc/100?img=3',
+    time: '5h atrás',
+    content:
+      'Orgulho de apoiar jovens atletas 🌟',
+    image:
+      'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800',
+    hypes: 156,
+    comments: 12,
+    userType: 'apoiador' as const,
+  },
+];
+
+export default function FeedScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.container}>
+      <StatusBar
+        barStyle="dark-content"
+      />
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View style={styles.header}>
+        <View style={styles.logoRow}>
+          <View
+            style={styles.logoIcon}
+          >
+            <Text
+              style={
+                styles.logoIconText
+              }
+            >
+              CA
+            </Text>
+          </View>
+
+          <Text style={styles.logoText}>
+            Conecta Atleta
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.bellBtn}
+        >
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={colors.text}
+          />
+
+          <View style={styles.bellDot} />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={mockPosts}
+        keyExtractor={(item) =>
+          item.id
+        }
+        renderItem={({ item }) => (
+          <PostCard {...item} />
+        )}
+        showsVerticalScrollIndicator={
+          false
+        }
+        contentContainerStyle={
+          styles.list
+        }
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor:
+      colors.background,
+  },
+
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent:
+      'space-between',
+    backgroundColor: colors.card,
+    paddingHorizontal:
+      spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 0.5,
+    borderBottomColor:
+      colors.border,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+
+  logoIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor:
+      colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  logoIconText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 12,
+  },
+
+  logoText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+
+  bellBtn: {
+    position: 'relative',
+    padding: 4,
+  },
+
+  bellDot: {
     position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor:
+      colors.danger,
+    borderWidth: 1.5,
+    borderColor: colors.card,
+  },
+
+  list: {
+    paddingBottom: 16,
   },
 });
