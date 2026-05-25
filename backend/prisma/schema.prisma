@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserType {
+  ATLETA
+  APOIADOR
+}
+
+enum PostType {
+  FOTO
+  VIDEO
+  TEXTO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  bio       String?
+  avatar    String?
+  city      String?
+  state     String?
+  type      UserType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts    Post[]
+  projects Project[]
+  comments Comment[]
+  likes    Like[]
+
+  following Connection[] @relation("following")
+  followers Connection[] @relation("followers")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String?
+  mediaUrl  String?
+  type      PostType
+  createdAt DateTime @default(now())
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  comments Comment[]
+  likes    Like[]
+}
+
+model Project {
+  id String @id @default(cuid())
+
+  title       String
+  description String
+
+  goal   Float
+  raised Float @default(0)
+
+  image String?
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Connection {
+  id String @id @default(cuid())
+
+  followerId  String
+  followingId String
+
+  follower User @relation("followers", fields: [followerId], references: [id])
+
+  following User @relation("following", fields: [followingId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+
+model Comment {
+  id String @id @default(cuid())
+
+  content String
+
+  userId String
+  postId String
+
+  user User @relation(fields: [userId], references: [id])
+
+  post Post @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Like {
+  id String @id @default(cuid())
+
+  userId String
+  postId String
+
+  user User @relation(fields: [userId], references: [id])
+
+  post Post @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+}

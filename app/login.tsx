@@ -21,6 +21,7 @@ import {
   radius,
   typography,
 } from '@/constants/theme';
+import { api } from '@/services/api';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -30,9 +31,21 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] =
     useState(false);
 
-  const handleLogin = () => {
+const handleLogin = async () => {
+  try {
+    const response =
+      await api.post('/auth/login', {
+        email,
+        password,
+      });
+
+    console.log(response.data);
+
     router.replace('/(tabs)');
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <KeyboardAvoidingView
