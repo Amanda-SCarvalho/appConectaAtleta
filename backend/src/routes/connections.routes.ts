@@ -1,24 +1,20 @@
-import { Router } from 'express';
-import { prisma } from '../lib/prisma';
+import { Router } from "express";
+import { prisma } from "../lib/prisma";
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
+  const { followerId, followingId } = req.body;
 
-  const {
-    followerId,
-    followingId,
-  } = req.body;
-
-  const connection =
-    await prisma.connection.create({
-      data: {
-        followerId,
-        followingId,
-      },
-    });
+  const connection = await prisma.connection.create({
+    data: {
+      followerId,
+      followingId,
+    },
+  });
 
   return res.status(201).json(connection);
 });
 
-export default router;
+export { router as connectionsRoutes };
+

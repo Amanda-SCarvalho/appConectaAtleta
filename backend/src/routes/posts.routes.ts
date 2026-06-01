@@ -1,42 +1,35 @@
-import { Router } from 'express';
-import { prisma } from '../lib/prisma';
+import { Router } from "express";
+import { prisma } from "../lib/prisma";
 
 const router = Router();
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
+  const { content, image, authorId } = req.body;
 
-  const {
-    content,
-    image,
-    authorId,
-  } = req.body;
-
-  const post =
-    await prisma.post.create({
-      data: {
-        content,
-        image,
-        authorId,
-      },
-    });
+  const post = await prisma.post.create({
+    data: {
+      content,
+      image,
+      authorId,
+    },
+  });
 
   return res.status(201).json(post);
 });
 
-router.get('/', async (_, res) => {
+router.get("/", async (_, res) => {
+  const posts = await prisma.post.findMany({
+    include: {
+      author: true,
+    },
 
-  const posts =
-    await prisma.post.findMany({
-      include: {
-        author: true,
-      },
-
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return res.json(posts);
 });
 
-export default router;
+export { router as postsRoutes };
+
